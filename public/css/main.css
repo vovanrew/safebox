@@ -1,0 +1,87 @@
+body, #mainWrapper {
+  height: 100%;
+  background-color:rgb(245, 245, 245);
+}
+
+body, .form-control{
+  font-size:12px!important;
+}
+
+.floatRight{
+  float:right;
+  margin-right: 18px;
+}
+
+.has-error{
+  color:red;
+}
+h1{
+  text-align: center;}
+h1,p{
+  color: white;
+}
+.polygram{
+  top: 50%;
+  text-align: center;
+  font-family: Impact;
+  font-size: 40pt;
+}
+.reg{
+  text-align:center;
+  margin-top: 700px;
+}
+.login-form {
+  background-color: white;
+}
+.generic-container {
+  width:80%;
+  margin-left: 20px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  padding: 20px;
+  background-color: #EAE7E7;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: 0 0 30px black;
+}
+
+.custom-width {
+  width: 80px !important;
+}
+.image{
+  position: absolute;
+  top: 5%;
+  right: 5%;
+  bottom: 5%;
+  left: 5%;
+  margin: 0 auto;
+  background: no-repeat center center;
+  background-size: auto;
+  overflow: hidden;
+  z-index: 1;
+}
+.background{
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  margin: 0 auto;
+  background-size: 100% 100%;
+  background-color: #0f0f0f;
+  opacity: 0.5;
+}
+.images-container{
+  position:fixed;
+  padding: 100px;
+  right: 10%;
+  left: 10%;
+}
+.images {
+  height: 206px;
+  width: 206px;
+  background: no-repeat 50% 25%;
+  background-size: cover;
+  display: inline-block;
+  overflow: hidden;
+}
