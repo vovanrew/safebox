@@ -8,8 +8,9 @@ import java.io.{File => JFile}
 import java.nio.file._
 import java.nio.file.attribute.PosixFilePermission
 import java.nio.file.{Files => JFiles}
+import java.time.LocalDateTime
+import java.util.Date
 
-import akka.http.scaladsl.model.DateTime
 import repository.{Files => MetaFiles}
 import com.typesafe.config.Config
 import dto.FileMetadata
@@ -17,6 +18,7 @@ import org.apache.commons.lang3.SystemUtils
 import play.api.libs.Files.TemporaryFile
 import utils.Utils
 import dto.FileMetadata._
+import play.api.mvc.MultipartFormData
 
 import scala.collection.JavaConversions
 
@@ -35,17 +37,53 @@ class FileManagerService @Inject()(config: Config) {
 
   def mislaidPhotoUrl(mislaidId: Long): String => String = hostnameUrl + webPath + mislaidPhotoPath(mislaidId)(_)
 
-  def saveUploadedTempFile(file: TemporaryFile, userId: String): Option[FileMetadata] = {
-    val pathDir = (uploadPath / userId).createDirectory()
-    val filename = file.getFileName.toString
-    val fullPath = s"${pathDir.path}/$filename"
-    file.moveTo(Paths.get(fullPath), replace = true)
+  def getUserFiles(userId: Long): List[FileMetadata] = MetaFiles.filesByUserId(userId).map(fileRepo2Dto)
 
-    Some(MetaFiles.create(userId.toLong, filename, fullPath, DateTime.now, hashedFilename(filename, userId), ""))
+  def saveUploadedTempFile(file: MultipartFormData.FilePart[TemporaryFile], userId: String): Option[FileMetadata] = {
+    val pathDir = (uploadPath / userId).createDirectory()
+    val filename = file.filename
+    val fullPath = s"${pathDir.path}/$filename"
+    val exists = Files.exists(Paths.get(fullPath))
+
+    if (exists) {
+      MetaFiles.filesByUserId(userId.toLong).headOption.map(fileRepo2Dto)
+    } else {
+      file.ref.moveTo(Paths.get(fullPath), replace = true)
+      Some(MetaFiles.create(userId.toLong, filename, "", fullPath, LocalDateTime.now(), hashedFilename(filename, userId), false, ""))
+    }
   }
+
+  def updateUserUploadedFileData(userId: String, filename: String, description: String, isSecured: Boolean): Option[FileMetadata] = {
+    val filePath = s"$uploadPath/$userId/$filename"
+    val exists = Files.exists(Paths.get(filePath))
+
+    if (exists) {
+      val accessKey = if(isSecured) generateAccessKey(userId, filename) else ""
+
+      MetaFiles.updateUserFileMetadata(userId.toLong, filename, description, isSecured, accessKey)
+      MetaFiles.findUserFile(userId.toLong, filename).map(fileRepo2Dto)
+    } else {
+      MetaFiles.deleteUserFileMetadata(userId.toLong, filename)
+      None
+    }
+  }
+
+  def getUserFileByIdentifierSecured(identifier: String, key: String): Option[java.io.File] = {
+    MetaFiles.getUserFileByIdentifierAndKey(identifier, key).map(f => new java.io.File(f.path))
+  }
+
+  def getUserFileByIdentifier(identifier: String): Option[FileMetadata] = {
+    MetaFiles.getFileByIdentifier(identifier).map(fileRepo2Dto)
+  }
+
+
 
   private def hashedFilename(filename: String, userId: String): String = {
     (filename + userId).bcrypt
+  }
+
+  private def generateAccessKey(userId: String, filename: String): String = {
+    (userId + filename).bcrypt
   }
 
   def downloadFile(url: String, toName: String => String, directoryName: String): (String, JFile) = {
@@ -60,38 +98,17 @@ class FileManagerService @Inject()(config: Config) {
     (filename, filePath.jfile)
   }
 
-  def saveFile(file: JFile, directoryName: String, filenameFull: String, move: Boolean = false): JFile = {
-    val pathDir = (uploadPath / directoryName).createDirectory()
-    val jfile = (pathDir / filenameFull).jfile
+  def deleteFile(fileMetadata: FileMetadata): Option[FileMetadata] = {
+    MetaFiles.getFileByIdentifier(fileMetadata.urlIdentifier) match {
+      case Some(fileRepo) =>
+        val file = new JFile(fileRepo.path)
+        file.delete()
+        MetaFiles.deleteFileById(fileRepo.id)
+        Some(fileMetadata)
 
-    if (move) {
-      JFiles.move(file.toPath, jfile.toPath)
-    } else {
-      JFiles.copy(file.toPath, jfile.toPath)
-    }
-
-    if (SystemUtils.IS_OS_LINUX) changePermissions(jfile)
-
-    jfile
-  }
-
-  def abstractFullFile(directoryName: String, filenameFull: String): JFile = {
-    val pathDir = (uploadPath / directoryName).createDirectory()
-    (pathDir / filenameFull).jfile
-  }
-
-  private def changePermissions(jfile: JFile) = {
-    try {
-      Files.setPosixFilePermissions(
-        jfile.toPath,
-        JavaConversions.setAsJavaSet(
-          Set(PosixFilePermission.OWNER_READ, PosixFilePermission.OWNER_WRITE, PosixFilePermission.GROUP_READ, PosixFilePermission.OTHERS_READ)
-        )
-      )
-    } catch {
-      case e: java.nio.file.attribute.UserPrincipalNotFoundException =>
-      case e: java.lang.UnsupportedOperationException =>
+      case None => None
     }
   }
+
 }
 

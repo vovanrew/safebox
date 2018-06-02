@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
+
+</head>
+<body>
+    <br>
+    <div class="header">
+        <div class="container">
+            <div class="row">
+                <div id="logo" class="col-1">
+                    <img src="images/storage.png" width=150% height=100%>
+                </div>
+                <div class="col-md-5">
+                    <!-- Logo -->
+                    <div class="logo">
+                        <h1><a id="profileName" href="profile.html"></a></h1>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <div class="input-group form">
+                                <input type="text" class="form-control" placeholder="Search...">
+                                <span class="input-group-btn">
+                                 <button class="btn btn-primary" type="button">Search</button>
+                               </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br><br>
+
+    <div id="fileListContainer">
+        <div id="filesContainer" class="container">
+        </div>
+        <br>
+
+        <div class="row justify-content-center align-items-center">
+            <div class="col-md-7">
+                <button id="newFileButton" class="btn btn-primary" type="button">New file</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="backButton" class="container" style="display: none;">
+        <button type="button" class="btn btn-secondary">Back</button>
+    </div>
+
+    <br>
+    <br>
+    <br>
+    <br>
+
+    <div id="newFileFormContainer" class="container" style="display: none">
+        <div class="row">
+            <div class="col-8">
+
+                <div class="row">
+                    <div class="col">
+                        <input type="file" id="fileSelect" name="newFile" multiple/>
+                    </div>
+                </div>
+                <br>
+
+                <div class="row">
+                    <div class="col">
+                        <input class="form-control" type="text" id="description" placeholder="File description">
+                    </div>
+                </div>
+                <br>
+
+                <div class="row">
+                    <div class="col">
+                        <div class="form-check">
+                            <input type="checkbox" class="form-check-input" id="isSecured">
+                            <label class="form-check-label" for="isSecured">Generate security key</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col"></div>
+                    <div class="col-2">
+                        <button class="btn btn-primary" id="uploadButton">Upload</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+
+    <div class="container" id="fileContainer" style="display: none">
+        <div class="row">
+            <h4><p style="cursor:pointer;color:blue;" id="filename">FILENAME</p></h4>
+        </div>
+        <div class="row">
+            <p id="fileDescription">FILE DESCRIPTION</p>
+        </div>
+
+        <div class="row">
+            <p id="createdAt">CREATED AT</p>
+        </div>
+        <br>
+        <div class="row">
+            Identifier
+        </div>
+        <div class="row">
+            <span class="input-group-text" id="identifier"></span>
+        </div>
+
+        <div id="secureKey">
+            <div class="row">
+                Secure key
+            </div>
+
+            <div class="row">
+                <span id="key" class="input-group-text"></span>
+            </div>
+        </div>
+
+    </div>
+
+    <script src="js/profile.js"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
+</body>
+</html>

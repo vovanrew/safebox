@@ -6,13 +6,14 @@ import play.api.mvc.{AbstractController, ControllerComponents}
 import dto.User._
 import dto.Error._
 import play.api.libs.json.{JsError, JsSuccess, Json}
-import services.UserService
+import services.{ProfileService, UserService}
 import dto.JsonResult._
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class UserController @Inject() (scc: SecuredControllerComponents, userService: UserService)
-  extends SecuredController(scc: SecuredControllerComponents) {
+class UserController @Inject() (cc: ControllerComponents, userService: UserService, profileService: ProfileService)
+  extends AbstractController(cc: ControllerComponents) {
 
   def register = Action(parse.json).async { request =>
     Future (
@@ -46,22 +47,11 @@ class UserController @Inject() (scc: SecuredControllerComponents, userService: U
               BadRequest(Json.toJson(JsonResult(Unsuccess.name, Error("Invalid data"))))
 
             case Some(u) =>
-              Ok(Json.toJson(JsonResult(data = u)))
+              val profile = profileService.formUserProfile(u)
+              Ok(Json.toJson(JsonResult(Success.name, Json.toJson(profile).toString())))
                 .withSession(("id", u.id.toString), ("name", u.name), ("email", u.email))
           }
       }
-    )
-  }
-
-  def profile(name: String) = AuthenticatedAction.async { implicit request =>
-    Future (
-        userService.getUserWithName(name) match {
-          case None =>
-            NotFound(Json.toJson(JsonResult(Unsuccess.name, Error("There is no such user"))))
-
-          case Some(u) =>
-            Ok(Json.toJson(JsonResult(data = u)))
-        }
     )
   }
 }

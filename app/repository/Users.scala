@@ -43,4 +43,8 @@ object Users extends SQLSyntaxSupport[Users]{
   def findByName(name: String)(implicit session: DBSession = autoSession): Option[Users] = withSQL {
     select.from(Users as u).where.eq(u.name, name)
   }.map(Users(u)).single.apply()
+
+  def findById(id: Long)(implicit session: DBSession = autoSession): Option[Users] = withSQL {
+    select.from(Users as u).where.eq(u.id, id)
+  }.map(Users(u)).single.apply()
 }

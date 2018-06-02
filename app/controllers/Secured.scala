@@ -12,12 +12,12 @@ class AuthenticatedRequest[A](val userId: String, request: Request[A]) extends W
 
 class AuthenticatedActionBuilder @Inject()(parser: BodyParsers.Default)(implicit ec: ExecutionContext)
   extends ActionBuilderImpl(parser) {
-  override def invokeBlock[A](request: Request[A], block: (Request[A]) => Future[Result]): Future[Result] = {
+  override def invokeBlock[A](request: Request[A], block: Request[A] => Future[Result]): Future[Result] = {
     request.session.get("id") match {
       case Some(id) =>
         block(new AuthenticatedRequest[A](id, request))
       case _ =>
-        Future(Unauthorized)
+        Future(Unauthorized("Authorize for this type requests."))
     }
   }
 }

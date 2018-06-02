@@ -6,28 +6,52 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
-
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md"></div>
-            <div class="col-md-4">
-                <form class="form-signin">
-                    <h2 class="form-signin-heading">Please login</h2>
-                    <input type="text" class="form-control" name="username" placeholder="Email Address" required="" autofocus="" />
-                    <input type="password" class="form-control" name="password" placeholder="Password" required=""/>
-                    <label class="checkbox">
-                        <input type="checkbox" value="remember-me" id="rememberMe" name="rememberMe"> Remember me
-                    </label>
-                    <button class="btn btn-lg btn-primary btn-block" type="submit">Login</button>
-                </form>
-            </div>
-            <div class="col-md"></div>
+    <div class="login-image">
+        <img src="images/storage.png">
+    </div>
+    <div class="user-form" id="login">
+        <h2 class="form-signin-heading center-text">Log In</h2>
+        <input id="loginEmail" type="text" class="form-control" name="username" placeholder="Email Address" required=""
+               autofocus=""/>
+        <input id="loginPassword" type="password" class="form-control" name="password" placeholder="Password"
+               required=""/>
+        <label class="checkbox">
+            <input type="checkbox" value="remember-me" id="rememberMe" name="rememberMe"> Remember me
+        </label>
+
+        <button id="loginButton" class="btn btn-lg btn-primary btn-block">Login</button>
+
+        <div>
+            <p id="registerLink">Register</p>
+        </div><br>
+        <div id="loginErrorAlert" class="alert alert-danger" style="display: none" role="alert">
+            <p id="loginError"></p>
         </div>
-        <div class="row">  </div>
     </div>
 
+    <div class="user-form" id="register">
+        <h2 class="form-signin-heading center-text">Register</h2>
+        <input id="registerEmail" type="text" class="form-control" name="email" placeholder="Email Address" required="" autofocus=""/>
+        <input id="registerName" type="text" class="form-control" name="username" placeholder="Username" required="" autofocus=""/>
+        <input id="registerPassword" type="password" class="form-control" name="password" placeholder="Password" required=""/>
+        <input id="registerConfirmPassword" type="password" class="form-control" name="passwordRepeat" placeholder="Repeat password"
+               required=""/><br>
+
+        <button id="registerButton" class="btn btn-lg btn-primary btn-block">Register</button>
+
+        <div>
+            <p id="loginLink">Log In</p>
+        </div><br>
+        <div id="registerSuccessAlert" class="alert alert-success" style="display: none">
+            <p id="registerSuccess"></p>
+        </div>
+        <div id="registerErrorAlert" class="alert alert-danger" style="display: none" role="alert">
+            <p id="registerError"></p>
+        </div>
+    </div>
 
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
@@ -35,6 +59,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/js/bootstrap.min.js" integrity="sha384-smHYKdLADwkXOn1EmN1qk/HfnUcbVRZyYmZ4qpPea6sjB/pTJ0euyQp0Mk8ck+5T" crossorigin="anonymous"></script>
 
+    <!--user -->
+    <script src="js/userform.js"></script>
 </body>
 
 </html>

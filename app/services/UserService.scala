@@ -37,6 +37,15 @@ class UserService {
     }
   }
 
+  def getUserWithId(id: Long): Option[User] = {
+    Users.findById(id) match {
+      case Some(user) =>
+        Some(user)
+      case None =>
+        None
+    }
+  }
+
   //use if checked that user data is unique
   private def generateSalt(user: User): String = {
     (user.name + user.email + user.password).bcrypt

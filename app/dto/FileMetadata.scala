@@ -1,20 +1,25 @@
 package dto
 
-import akka.http.scaladsl.model.DateTime
-import play.api.libs.json.{Json, OFormat}
+
+import java.time.LocalDateTime
+import java.util.Date
+
+import play.api.libs.json._
 import repository.Files
 
 case class FileMetadata(id: Long,
                         userId: Long,
                         filename: String,
-                        createdAt: DateTime,
+                        description: String,
+                        createdAt: LocalDateTime,
                         urlIdentifier: String,
+                        isSecured: Boolean,
                         accessKey: String)
 
 object FileMetadata {
 
   implicit val fileMetadataFormat: OFormat[FileMetadata] = Json.format[FileMetadata]
   implicit def fileRepo2Dto(file: Files): FileMetadata =
-    FileMetadata(file.id, file.userId, file.filename, file.createdAt, file.urlIdentifier, file.accessKey)
+    FileMetadata(file.id, file.userId, file.filename, file.description, file.createdAt, file.urlIdentifier, file.isSecured, file.accessKey)
 
 }

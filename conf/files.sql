@@ -1,0 +1,13 @@
+CREATE TABLE files(
+  id BIGINT NOT NULL AUTO_INCREMENT,
+  user_id BIGINT NOT NULL,
+  filename VARCHAR (255) NOT NULL,
+  description VARCHAR (255) NOT NULL,
+  path VARCHAR (255) NOT NULL,
+  created_at DATETIME NOT NULL,
+  url_identifier VARCHAR (255) NOT NULL,
+  is_secured BOOLEAN NOT NULL,
+  access_key VARCHAR (255) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=INNODB;

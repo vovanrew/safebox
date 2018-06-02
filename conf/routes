@@ -10,5 +10,16 @@ POST    /register                   controllers.UserController.register
 
 POST    /login                      controllers.UserController.login
 
-GET     /:name                      controllers.UserController.profile(name: String)
-      
+GET     /my/files                   controllers.FileController.files
+
+POST    /upload                     controllers.FileController.upload
+
+POST    /metaupload                 controllers.FileController.metaUpload
+
+POST     /file                       controllers.FileController.file
+
+GET     /metadownload               controllers.FileController.metaDownload(file: String)
+
+GET     /:name                      controllers.ProfileController.profile(name: String)
+
+DELETE  /file                       controllers.FileController.delete
