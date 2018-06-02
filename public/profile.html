@@ -7,30 +7,35 @@
 
 </head>
 <body>
-    <br>
-    <div class="header">
-        <div class="container">
-            <div class="row">
-                <div id="logo" class="col-1">
-                    <img src="images/storage.png" width=150% height=100%>
+    <div class="container-fluid" style="background-color: #E5EAFF">
+        <div class="row align-items-center h-100">
+            <div id="logo" class="col-md-1">
+                <img src="images/storage5.png" width=80% height=70%>
+            </div>
+            <div class="col-md-2">
+                <!-- Logo -->
+                <div class="logo">
+                    <h1 class="text-left"><a style="text-decoration:none;" href="profile.html">SafeBox</a></h1>
                 </div>
-                <div class="col-md-5">
-                    <!-- Logo -->
-                    <div class="logo">
-                        <h1><a id="profileName" href="profile.html"></a></h1>
-                    </div>
-                </div>
-                <div class="col-md-5">
-                    <div class="row">
-                        <div class="col-lg-12">
-                            <div class="input-group form">
-                                <input type="text" class="form-control" placeholder="Search...">
-                                <span class="input-group-btn">
-                                 <button class="btn btn-primary" type="button">Search</button>
-                               </span>
-                            </div>
+            </div>
+            <div class="col-md-4">
+                <h3 style="cursor:pointer;color:blue;" id="profileName"></h3>
+            </div>
+            <div class="col-md">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <div class="input-group form">
+                            <input type="text" class="form-control" placeholder="Search...">
+                            <span class="input-group-btn">
+                                <button class="btn btn-primary" type="button">Search</button>
+                            </span>
                         </div>
                     </div>
+                </div>
+            </div>
+            <div class="col-md text-center">
+                <div class="logo">
+                    <h4><a style="text-decoration:none;"  id="logout" href="profile.html">logout</a></h4>
                 </div>
             </div>
         </div>
@@ -38,20 +43,23 @@
 
     <br><br>
 
-    <div id="fileListContainer">
+    <div id="fileListContainer" class="container">
+
         <div id="filesContainer" class="container">
         </div>
         <br>
 
-        <div class="row justify-content-center align-items-center">
-            <div class="col-md-7">
-                <button id="newFileButton" class="btn btn-primary" type="button">New file</button>
-            </div>
+        <div class="container">
+            <button id="newFileButton" class="btn btn-primary" type="button">New file</button>
         </div>
     </div>
 
     <div id="backButton" class="container" style="display: none;">
-        <button type="button" class="btn btn-secondary">Back</button>
+        <div class="row">
+            <div class="col-md">
+                <button type="button" class="btn btn-secondary">Back</button>
+            </div>
+        </div>
     </div>
 
     <br>
@@ -61,7 +69,7 @@
 
     <div id="newFileFormContainer" class="container" style="display: none">
         <div class="row">
-            <div class="col-8">
+            <div class="col-12">
 
                 <div class="row">
                     <div class="col">
@@ -87,8 +95,7 @@
                 </div>
 
                 <div class="row">
-                    <div class="col"></div>
-                    <div class="col-2">
+                    <div class="col-md text-right">
                         <button class="btn btn-primary" id="uploadButton">Upload</button>
                     </div>
                 </div>

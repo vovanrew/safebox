@@ -25,10 +25,11 @@ document.getElementById("backButton").addEventListener("click", function () {
 });
 
 function cleanFiles() {
-    var filesContainer = document.getElementById("filesContainer");
     files.forEach(function (file) {
-        var node = document.getElementById("fileElementContainer" + file.id);
+        var node = document.getElementById("fileNode" + file.id);
         node.style.display = "none";
+        filesContainer.removeChild(node);
+        node = document.getElementById("hr-fileNode" + file.id);
         filesContainer.removeChild(node);
     })
 }
@@ -66,24 +67,19 @@ function fileList() {
     if(files.length > 0) {
         files.forEach(function (file) {
             var html =
-                '   <div id="fileNode' + file.id + '" class="span5">\n' +
-                '       <div class="row">' +
-                '           <div class="container col-10">' +
-                '               <h4><p style="cursor:pointer;color:blue;" id="file' + file.id + '">' + file.filename + '</p></h4>\n' +
-                '               <p>' + file.createdAt + '</p>\n' +
-                '           </div>' +
-                '           <div class="col-1">' +
-                '               <button id="fileDelete' + file.id + '" type="button" class="btn btn-secondary">Delete</button>' +
-                '           </div>' +
-                '       </div>' +
-                '   </div>';
+                '<div class="col">' +
+                '   <h4><p style="cursor:pointer;color:blue;" id="file' + file.id + '">' + file.filename + '</p></h4>\n' +
+                '   <p>' + file.createdAt + '</p>\n' +
+                '</div>' +
+                '<div class="col-1">' +
+                '   <button id="fileDelete' + file.id + '" type="button" class="btn btn-secondary">Delete</button>' +
+                '</div>';
 
-            addFileElement("filesContainer", "div", "fileElementContainer" + file.id, html);
+            addFileElement("filesContainer", "div", "fileNode" + file.id, html);
             document.getElementById("file" + file.id).addEventListener("click", function() {
                 document.getElementById("fileListContainer").style.display = "none";
                 document.getElementById("newFileFormContainer").style.display = "none";
                 document.getElementById("fileContainer").style.display = "block";
-
                 document.getElementById("filename").innerHTML = file.filename;
                 document.getElementById("fileDescription").innerHTML = file.description;
                 document.getElementById("createdAt").innerHTML = file.createdAt;
@@ -96,6 +92,8 @@ function fileList() {
                 } else {
                     document.getElementById("key").innerHTML = file.accessKey;
                 }
+
+                document.getElementById("backButton").style.display = "block";
             });
 
             document.getElementById("fileDelete" + file.id).addEventListener("click", function () {
@@ -110,6 +108,8 @@ function deleteFile(file) {
     req.onload = function (ev) {
         if (req.status === 200) {
             var node = document.getElementById("fileNode" + file.id);
+            node.remove();
+            node = document.getElementById("hr-fileNode" + file.id);
             node.remove();
         } else {
             setProfile();
@@ -126,6 +126,10 @@ function addFileElement(parentId, elementTag, elementId, html) {
     newElement.setAttribute('class', 'row');
     newElement.innerHTML = html;
     p.appendChild(newElement);
+    var hr = document.createElement("hr");
+    hr.setAttribute("id", "hr-" + elementId);
+    hr.style.width = "102%";
+    p.appendChild(hr);
 }
 
 var fileSelect = document.getElementById("fileSelect");

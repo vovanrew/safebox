@@ -30,7 +30,6 @@ function fileId(query) {
     return find(query, '=');
 }
 
-
 //helper
 function find(str, symbol) {
     var startsAt = 0;
@@ -43,6 +42,14 @@ function find(str, symbol) {
     }
 
     return startsAt;
+}
+
+function skipSpace(fileId) {
+    var i = 0;
+    while(fileId[i] === ' ') {
+        i++;
+    }
+    return fileId.substr(i, fileId.length);
 }
 
 function request(method, where) {
@@ -657,6 +664,8 @@ req.onload = function () {
 
         document.getElementById("downloadButton").addEventListener("click", function() {
             var key = document.getElementById("key").value;
+            key = skipSpace(key);
+            console.log(key);
 
             if (file.isSecurede && key.length === 0) {
                 document.getElementById("keyIsEmptyAlert").style.display = "block";
@@ -708,42 +717,3 @@ req.onload = function () {
         location.href = "notfound.html";
     }
 };
-
-// ----------------------- End of Extensions to MIME --------- //
-
-// function download(filename) {
-//     if (typeof filename==='undefined') filename = ""; // default
-//     value = document.getElementById('textarea_area').value;
-//
-//     filetype="text/*";
-//     extension=filename.substring(filename.lastIndexOf("."));
-//     for (var i = 0; i < extToMIME.length; i++) {
-//         if (extToMIME[i][0].localeCompare(extension)===0) {
-//             filetype=extToMIME[i][1];
-//             break;
-//         }
-//     }
-//
-//
-//     var pom = document.createElement('a');
-//     pom.setAttribute('href', 'data: '+filetype+';charset=utf-8,' + '\ufeff' + encodeURIComponent(value)); // Added BOM too
-//     pom.setAttribute('download', filename);
-//
-//
-//     if (document.createEvent) {
-//         if (navigator.userAgent.indexOf('MSIE') !== -1 || navigator.appVersion.indexOf('Trident/') > 0) { // IE
-//             blobObject = new Blob(['\ufeff'+value]);
-//             window.navigator.msSaveBlob(blobObject, filename);
-//         } else { // FF, Chrome
-//             var event = document.createEvent('MouseEvents');
-//             event.initEvent('click', true, true);
-//             pom.dispatchEvent(event);
-//         }
-//     } else if( document.createEventObject ) { // Have No Idea
-//         var evObj = document.createEventObject();
-//         pom.fireEvent( 'onclick' , evObj );
-//     } else { // For Any Case
-//         pom.click();
-//     }
-//
-// }
