@@ -13,6 +13,7 @@ case class Files(id: Long,
                  path: String,
                  createdAt: LocalDateTime,
                  urlIdentifier: String,
+                 initVector: String,
                  isSecured: Boolean,
                  accessKey: String)
 
@@ -30,6 +31,7 @@ object Files extends SQLSyntaxSupport[Files] {
     path = rs.get(c.path),
     createdAt = rs.get(c.createdAt),
     urlIdentifier = rs.get(c.urlIdentifier),
+    initVector = rs.get(c.initVector),
     isSecured = rs.get(c.isSecured),
     accessKey = rs.get(c.accessKey)
   )
@@ -42,6 +44,7 @@ object Files extends SQLSyntaxSupport[Files] {
             path: String,
             createdAt: LocalDateTime,
             urlIdentifier: String,
+            initVector: String,
             isSecured: Boolean,
             accessKey: String)(implicit session: DBSession = autoSession): Files = {
 
@@ -53,12 +56,13 @@ object Files extends SQLSyntaxSupport[Files] {
         column.path -> path,
         column.createdAt -> createdAt,
         column.urlIdentifier -> urlIdentifier,
+        column.initVector -> initVector,
         column.isSecured -> isSecured,
         column.accessKey -> accessKey
       )
     }.updateAndReturnGeneratedKey().apply()
 
-    Files(id, userId, filename, description, path, createdAt, urlIdentifier, isSecured, accessKey)
+    Files(id, userId, filename, description, path, createdAt, urlIdentifier, initVector, isSecured, accessKey)
   }
 
   def filesByUserId(userId: Long)(implicit session: DBSession = autoSession): List[Files] = withSQL {
@@ -69,10 +73,11 @@ object Files extends SQLSyntaxSupport[Files] {
     select.from(Files as f).where.eq(f.userId, userId).and.eq(f.filename, filename)
   }.map(Files(f)).single().apply()
 
-  def updateUserFileMetadata(userId: Long, fileName: String, description: String, isSecured: Boolean, accessKey: String)
+  def updateUserFileMetadata(userId: Long, fileName: String, description: String, initVector: String, isSecured: Boolean, accessKey: String)
                             (implicit session: DBSession = autoSession): Int = withSQL {
     update(Files as f).set(
       f.description -> description,
+      f.initVector -> initVector,
       f.isSecured -> isSecured,
       f.accessKey -> accessKey)
       .where.eq(f.userId, userId).and.eq(f.filename, fileName)

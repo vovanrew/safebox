@@ -49,18 +49,18 @@ class FileManagerService @Inject()(config: Config) {
       MetaFiles.filesByUserId(userId.toLong).headOption.map(fileRepo2Dto)
     } else {
       file.ref.moveTo(Paths.get(fullPath), replace = true)
-      Some(MetaFiles.create(userId.toLong, filename, "", fullPath, LocalDateTime.now(), hashedFilename(filename, userId), false, ""))
+      Some(MetaFiles.create(userId.toLong, filename, "", fullPath, LocalDateTime.now(), hashedFilename(filename, userId), "", false, ""))
     }
   }
 
-  def updateUserUploadedFileData(userId: String, filename: String, description: String, isSecured: Boolean): Option[FileMetadata] = {
+  def updateUserUploadedFileData(userId: String, filename: String, description: String, initVector: String, isSecured: Boolean): Option[FileMetadata] = {
     val filePath = s"$uploadPath/$userId/$filename"
     val exists = Files.exists(Paths.get(filePath))
 
     if (exists) {
       val accessKey = if(isSecured) generateAccessKey(userId, filename) else ""
 
-      MetaFiles.updateUserFileMetadata(userId.toLong, filename, description, isSecured, accessKey)
+      MetaFiles.updateUserFileMetadata(userId.toLong, filename, description, initVector, isSecured, accessKey)
       MetaFiles.findUserFile(userId.toLong, filename).map(fileRepo2Dto)
     } else {
       MetaFiles.deleteUserFileMetadata(userId.toLong, filename)

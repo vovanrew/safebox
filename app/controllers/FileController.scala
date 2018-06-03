@@ -42,7 +42,7 @@ class FileController @Inject() (scc: SecuredControllerComponents,
         case fileMetadata: JsSuccess[FileMetadata] =>
           val userId = request.session.get("id").get
           val fileData = fileMetadata.get
-          fileManager.updateUserUploadedFileData(userId, fileData.filename, fileData.description, fileData.isSecured) match {
+          fileManager.updateUserUploadedFileData(userId, fileData.filename, fileData.description, fileData.initVector, fileData.isSecured) match {
             case None =>
               BadRequest(Json.toJson(JsonResult(Unsuccess.name, Error("Something went wrong try again."))))
 

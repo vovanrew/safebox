@@ -665,7 +665,6 @@ req.onload = function () {
         document.getElementById("downloadButton").addEventListener("click", function() {
             var key = document.getElementById("key").value;
             key = skipSpace(key);
-            console.log(key);
 
             if (file.isSecurede && key.length === 0) {
                 document.getElementById("keyIsEmptyAlert").style.display = "block";
@@ -692,17 +691,34 @@ req.onload = function () {
                             }
                         }
 
-                        // The actual download
-                        var blob = new Blob([downloadReq.response], {type: filetype});
-                        var link = document.createElement('a');
-                        link.href = window.URL.createObjectURL(blob);
-                        link.download = filename;
+                        var fileReader = new FileReader();
 
-                        document.body.appendChild(link);
+                        fileReader.onload = function() {
+                            var encrypted = this.result;
+                            var enc = new TextDecoder("utf-8");
 
-                        link.click();
+                            // The actual download
+                            (async () => {
+                                var mode = 'AES-GCM',
+                                    length = 256;
 
-                        document.body.removeChild(link);
+                                var ivObj = JSON.parse(file.initVector);
+                                var iv = new Uint8Array(Object.values(ivObj));
+                                var decrypted = await decrypt(encrypted, 'password', iv, mode, length);
+                                var blob = new Blob([decrypted], {type: filetype});
+                                var link = document.createElement('a');
+                                link.href = window.URL.createObjectURL(blob);
+                                link.download = filename;
+
+                                document.body.appendChild(link);
+
+                                link.click();
+
+                                document.body.removeChild(link);
+                            })();
+                        };
+
+                        fileReader.readAsArrayBuffer(downloadReq.response);
                     }
 
                     // some error handling should be done here...
@@ -717,3 +733,30 @@ req.onload = function () {
         location.href = "notfound.html";
     }
 };
+
+async function decrypt (encrypted, password, iv, mode, length) {
+    var algo = {
+        name: mode,
+        length: length,
+        iv: iv
+    };
+
+    var key = await genEncryptionKey(password, mode, length);
+    var decrypted = await crypto.subtle.decrypt(algo, key, encrypted);
+
+    return decrypted;
+}
+
+async function genEncryptionKey (password, mode, length) {
+    var algo = {
+        name: 'PBKDF2',
+        hash: 'SHA-256',
+        salt: new TextEncoder().encode('a-unique-salt'),
+        iterations: 1000
+    };
+    var derived = { name: mode, length: length };
+    var encoded = new TextEncoder().encode(password);
+    var key = await crypto.subtle.importKey('raw', encoded, { name: 'PBKDF2' }, false, ['deriveKey']);
+
+    return crypto.subtle.deriveKey(algo, key, derived, false, ['encrypt', 'decrypt']);
+}

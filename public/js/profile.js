@@ -146,41 +146,65 @@ function sendFile() {
         return;
     }
 
+    reader = new FileReader();
     var file = files[0];
-    var formData = new FormData();
-    formData.append("newFile", file, file.name);
-    var req = sendFileData("POST", serverName + "/upload", formData);
-    req.onload = function () {
-        if (req.status === 200) {
-            var description = document.getElementById("description").value;
-            var checkBox = document.getElementById("isSecured");
-            var isSecured;
 
-            if (checkBox.checked === true) {
-                isSecured = true;
-            } else {
-                isSecured = false;
+    reader.onload = function(e) {
+        var data = e.target.result;
+        (async () => {
+            var mode = 'AES-GCM',
+                length = 256,
+                ivLength = 12;
+
+            var encrypted = await encrypt(data, 'password', mode, length, ivLength);
+            console.log(encrypted); // { cipherText: ArrayBuffer, iv: Uint8Array }
+            var enc = new TextDecoder("utf-8");
+            var encryptedFile = new File([encrypted.cipherText], file.name);
+
+            var formData = new FormData();
+            formData.append("newFile", encryptedFile, file.name);
+
+            var req = sendFileData("POST", serverName + "/upload", formData);
+            req.onload = function () {
+                if (req.status === 200) {
+                    var description = document.getElementById("description").value;
+                    var checkBox = document.getElementById("isSecured");
+                    var isSecured;
+
+                    if (checkBox.checked === true) {
+                        isSecured = true;
+                    } else {
+                        isSecured = false;
+                    }
+
+                    console.log(encrypted.iv);
+                    var meta = new FileMetadata(0, user.id, file.name, description, Date.now(), "", JSON.stringify(encrypted.iv), isSecured, "");
+                    var xhr = requestJson("POST", serverName + "/metaupload", meta);
+                    xhr.onload = function (ev) {
+                        if(xhr.status === 200) {
+                            console.log("File uploaded successfully");
+                            var file = JSON.parse(JSON.parse(xhr.response).data);
+                            fileInfo(file);
+                        } else {
+                            console.log("error ocured while uploading file metadata")
+                        }
+                    };
+
+                    uploadButton.innerHTML = 'Upload';
+                } else {
+                    console.log(req.response);
+                    console.log("error ocured");
+                    uploadButton.innerHTML = 'Upload';
+                }
             }
 
-            var meta = new FileMetadata(0, user.id, file.name, description, Date.now(), "", isSecured, "");
-            var xhr = requestJson("POST", serverName + "/metaupload", meta);
-            xhr.onload = function (ev) {
-                if(xhr.status === 200) {
-                    console.log("File uploaded successfully");
-                    var file = JSON.parse(JSON.parse(xhr.response).data);
-                    fileInfo(file);
-                } else {
-                    console.log("error ocured while uploading file metadata")
-                }
-            };
+            var decrypted = await decrypt(encrypted, 'password', mode, length);
+            var enc = new TextDecoder("utf-8");
+            console.log(enc.decode(decrypted)); // Secret text
+        })();
+    };
 
-            uploadButton.innerHTML = 'Upload';
-        } else {
-            console.log(req.response);
-            console.log("error ocured");
-            uploadButton.innerHTML = 'Upload';
-        }
-    }
+    reader.readAsArrayBuffer(file);
 }
 
 function fileInfo(file) {
@@ -235,13 +259,55 @@ function requestJson(method, where, data) {
 }
 
 //file meta dto
-function FileMetadata(id, userId, filename, description, createdAt, urlIdentifier, isSecured, accessKey) {
+function FileMetadata(id, userId, filename, description, createdAt, urlIdentifier, initVector, isSecured, accessKey) {
     this.id = id;
     this.userId = userId;
     this.filename = filename;
     this.description = description;
     this.createdAt = createdAt;
     this.urlIdentifier = urlIdentifier;
+    this.initVector = initVector;
     this.isSecured = isSecured;
     this.accessKey = accessKey;
+}
+
+async function genEncryptionKey (password, mode, length) {
+    var algo = {
+        name: 'PBKDF2',
+        hash: 'SHA-256',
+        salt: new TextEncoder().encode('a-unique-salt'),
+        iterations: 1000
+    };
+    var derived = { name: mode, length: length };
+    var encoded = new TextEncoder().encode(password);
+    var key = await crypto.subtle.importKey('raw', encoded, { name: 'PBKDF2' }, false, ['deriveKey']);
+
+    return crypto.subtle.deriveKey(algo, key, derived, false, ['encrypt', 'decrypt']);
+}
+
+async function encrypt (text, password, mode, length, ivLength) {
+    var algo = {
+        name: mode,
+        length: length,
+        iv: crypto.getRandomValues(new Uint8Array(ivLength))
+    };
+    var key = await genEncryptionKey(password, mode, length);
+    var encoded = text;
+
+    return {
+        cipherText: await crypto.subtle.encrypt(algo, key, encoded),
+        iv: algo.iv
+    };
+}
+
+async function decrypt (encrypted, password, mode, length) {
+    var algo = {
+        name: mode,
+        length: length,
+        iv: encrypted.iv
+    };
+    var key = await genEncryptionKey(password, mode, length);
+    var decrypted = await crypto.subtle.decrypt(algo, key, encrypted.cipherText);
+
+    return decrypted;
 }

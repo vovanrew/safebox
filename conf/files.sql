@@ -6,6 +6,7 @@ CREATE TABLE files(
   path VARCHAR (255) NOT NULL,
   created_at DATETIME NOT NULL,
   url_identifier VARCHAR (255) NOT NULL,
+  init_vector VARCHAR (255) NOT NULL,
   is_secured BOOLEAN NOT NULL,
   access_key VARCHAR (255) NOT NULL,
   PRIMARY KEY (id),

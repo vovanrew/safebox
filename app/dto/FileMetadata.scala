@@ -13,6 +13,7 @@ case class FileMetadata(id: Long,
                         description: String,
                         createdAt: LocalDateTime,
                         urlIdentifier: String,
+                        initVector: String,
                         isSecured: Boolean,
                         accessKey: String)
 
@@ -20,6 +21,14 @@ object FileMetadata {
 
   implicit val fileMetadataFormat: OFormat[FileMetadata] = Json.format[FileMetadata]
   implicit def fileRepo2Dto(file: Files): FileMetadata =
-    FileMetadata(file.id, file.userId, file.filename, file.description, file.createdAt, file.urlIdentifier, file.isSecured, file.accessKey)
+    FileMetadata(file.id,
+      file.userId,
+      file.filename,
+      file.description,
+      file.createdAt,
+      file.urlIdentifier,
+      file.initVector,
+      file.isSecured,
+      file.accessKey)
 
 }
